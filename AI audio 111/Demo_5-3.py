@@ -74,7 +74,7 @@ def handle_audio(event):
     text1="".join(result)
     line_bot_api.reply_message(event.reply_token, TextSendMessage(text = result))
     #開始翻譯,上面是從linebot讀取音檔轉成文字
-    # x是字串 result是串列
+    # text1是字串 result是串列
     import requests, uuid, json
     from urllib.parse import parse_qsl, parse_qs
     from flask import url_for
