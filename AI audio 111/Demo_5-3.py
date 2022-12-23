@@ -71,27 +71,26 @@ def handle_audio(event):
     os.system('ffmpeg -y -i ' + name_mp3 + ' ' + name_wav + ' -loglevel quiet')
     result = transcribe(name_wav)
     print('Transcribe:', result)
-    x="".join(result)
+    text1="".join(result)
     line_bot_api.reply_message(event.reply_token, TextSendMessage(text = result))
     #開始翻譯,上面是從linebot讀取音檔轉成文字
     # x是字串 result是串列
     import requests, uuid, json
+    from urllib.parse import parse_qsl, parse_qs
+    from flask import url_for
+    from linebot.models import messages
+   
 
 
-# Add your key and endpoint
-    key = "963f6a606d26496186de19360d03e53d"
-    endpoint = "https://api.cognitive.microsofttranslator.com"
-
-    # location, also known as region.
-    # required if you're using a multi-service or regional (not global) resource. It can be found in the Azure portal on the Keys and Endpoint page.
-    location = "eastus"
-
+    key = "941a7833406b4b4d9ccb668e7ddcd48a"
+    endpoint = "https://api.cognitive.microsofttranslator.com/"
+    location = "uksouth"
+    print("a")
     path = '/translate'
     constructed_url = endpoint + path
-
     params = {
         'api-version': '3.0',
-        'from': 'zh-Hant',
+        'from':"zh-Hans",
         'to': ['en']
     }
 
@@ -105,17 +104,19 @@ def handle_audio(event):
 
     # You can pass more than one object in body.
     body = [{
-        'text': x.text
+        'text': result
     }]
 
     request = requests.post(constructed_url, params=params, headers=headers, json=body)
-    response = request.json()[0]["translations"][0]["text"]
-    print(response)
-    print(json.dumps(response, sort_keys=True, ensure_ascii=False, indent=4, separators=(',', ': ')))
-    
-        
-        
-    
+
+    # print(request.json()[0]['translations'][0]['text'])
+    print("b")
+    message = TextSendMessage(
+        text = request.json()[0]['translations'][0]['text']
+        )
+    print(request.json()[0]['translations'][0]['text'])
+    line_bot_api.reply_message(event.reply_token, message)
     # run app
+
 if __name__ == "__main__":
         app.run(host='127.0.0.1', port=5566)
